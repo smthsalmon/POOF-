@@ -8,38 +8,45 @@ import math
 from collections import Counter
 
 def grid():
-    lineh = -300
-    lined = -300
+    global boardsizex
+    global boardsizey
+    lineh = -50*boardsizey
+    lined = -50*boardsizex
     turtle.penup()
-    turtle.setpos(-300,300)
+    turtle.setpos(-50*boardsizex,50*boardsizey)
     turtle.pendown()
-    for i in range(4):
-        forward(600)
+    for i in range(2):
+        forward(100*boardsizex)
         right(90)
-    for i in range(5):
+        forward(100*boardsizey)
+        right(90)
+
+    for i in range(boardsizey):
         lineh += 100
         turtle.penup()
-        turtle.setpos(-300,lineh)
+        turtle.setpos(-50*boardsizex,lineh)
         turtle.setheading(0)
         turtle.pendown()
-        forward(600)
+        forward(100*boardsizex)
 
+    for i in range(boardsizex):
         lined += 100
         turtle.penup()
-        turtle.setpos(lined,-300)
+        turtle.setpos(lined,-50*boardsizey)
         turtle.setheading(90)
         turtle.pendown()
-        forward(600)
-    for i in range (6):
+        forward(100*boardsizey)
+
+    for i in range (boardsizex):
         turtle.penup()
-        turtle.setpos(100 * i - 250, 325)
+        turtle.setpos(100 * i - (50*boardsizex-50), 50*boardsizey+25)
         turtle.pendown()
-        turtle.write(i,align = "center",font = ("Georgia",20,"normal"))
-    for i in range(6):
+        turtle.write(i+1,align = "center",font = ("Georgia",20,"normal"))
+    for i in range(boardsizey):
         turtle.penup()
-        turtle.setpos(-334.5, -100 * i + 234.5)
+        turtle.setpos((-50*boardsizex-34.5), -100 * i + (50*boardsizey-65.5))
         turtle.pendown()
-        turtle.write(i, align="center", font=("Georgia", 20, "normal"))
+        turtle.write(i+1, align="center", font=("Georgia", 20, "normal"))
 
 def is_valid(x, y, board, visited, player):
     return 0 <= x < len(board) and 0 <= y < len(board[0]) and not visited[x][y] and board[x][y] == player
@@ -172,11 +179,11 @@ def find_liberties(groups, board, liberties):
 
 
 def start():
-    for i,j,y in [["POOF!",100,0],["EASY",40,-50],["MEDIUM",40,-150],["HARD",40,-250]]:
+    for i,fontsize,y in [["POOF!",100,0],["EASY",30,-50],["MEDIUM",30,-100],["HARD",30,-150],["RULES",30,-200],["OPTIONS",30,-250]]:
         turtle.penup()
         turtle.goto(0,y)
         turtle.pendown()
-        turtle.write(i,align="center",font=("Georgia",j,"normal"))
+        turtle.write(i,align="center",font=("Georgia",fontsize,"normal"))
 
 def check_capture(x, y, board, groups):
     # determine which player's piece X,Y is
@@ -213,12 +220,118 @@ def check_capture(x, y, board, groups):
 
 def drawpiece(x,y):
     turtle.penup()
-    turtle.setpos(100 * x - 275, -100 * y + 275)
+    turtle.setpos(100 * x - (50*boardsizex-25), -100 * y + (50*boardsizey-25))
     turtle.setheading(0)
     for k in range(4):
         turtle.pendown()
         forward(50)
         right(90)
+
+def rules(selectscreen):
+    while not keyboard.is_pressed("Escape"):
+        for i,fontsize,y in (["POOF!",60,200],["POOF! is a game about capturing pieces.",30,100],["Use WASD to move.",30,50],["Press ENTER to place a piece.",30,0],["HAVE FUN!",30,-100]):
+            turtle.penup()
+            turtle.setpos(0,y)
+            turtle.pendown()
+            turtle.write(i,align = "center",font = ("Georgia",fontsize,"normal"))
+    turtle.clear()
+    selectscreen = True
+
+def optionscreen(boardsizex,boardsizey,pcolor,ccolor):
+    for i, fontsize, y in ([f"Board Size: {boardsizex}x{boardsizey}", 30, 50], [f"Your Color: {pcolor}", 30, 0], [f"CPU Color: {ccolor}", 30, -50]):
+        turtle.penup()
+        turtle.setpos(0, y)
+        turtle.pendown()
+        turtle.write(i, align="center", font=("Georgia", fontsize, "normal"))
+
+def options():
+    global boardsizex
+    global boardsizey
+    oyselector = 2
+    boardsizex = 6
+    boardsizey = 6
+    counting = (1,2,3,4,5,6,7,8,9)
+    pcolor = "BLACK"
+    ccolor = "WHITE"
+    turtle.penup()
+    turtle.setpos(-200, 50 * oyselector)
+    for k in range(2):
+        turtle.pendown()
+        forward(400)
+        right(90)
+        forward(50)
+        right(90)
+    while not keyboard.is_pressed("Escape"):
+        optionscreen(boardsizex,boardsizey,pcolor,ccolor)
+        if keyboard.is_pressed("s"):
+            oyselector = oyselector -1
+            if oyselector < 0:
+                oyselector = 2
+            turtle.clear()
+            turtle.penup()
+            turtle.setpos(-200,50*oyselector)
+            for k in range(2):
+                turtle.pendown()
+                forward(400)
+                right(90)
+                forward(50)
+                right(90)
+            optionscreen(boardsizex,boardsizey,pcolor,ccolor)
+            time.sleep(0.08)
+        if keyboard.is_pressed("w"):
+            oyselector = oyselector +1
+            if oyselector > 2:
+                oyselector = 0
+            turtle.clear()
+            turtle.penup()
+            turtle.setpos(-200,50*oyselector)
+            for k in range(2):
+                turtle.pendown()
+                forward(400)
+                right(90)
+                forward(50)
+                right(90)
+            optionscreen(boardsizex,boardsizey,pcolor,ccolor)
+            time.sleep(0.08)
+
+        if oyselector == 2:
+            if keyboard.is_pressed("x"):
+                selecting_x = True
+                turtle.clear()
+                optionscreen(boardsizex,boardsizey,pcolor,ccolor)
+                turtle.penup()
+                turtle.setpos(63,90)
+                turtle.pendown()
+                for i in range(4):
+                    forward(40)
+                    right(90)
+                while selecting_x:
+                    for length in counting:
+                        if keyboard.is_pressed(f"{length}"):
+                            turtle.clear()
+                            boardsizex = length
+                            optionscreen(boardsizex, boardsizey, pcolor, ccolor)
+                            selecting_x = False
+            if keyboard.is_pressed("y"):
+                selecting_y = True
+                turtle.clear()
+                optionscreen(boardsizex,boardsizey,pcolor,ccolor)
+                turtle.penup()
+                turtle.setpos(108, 90)
+                turtle.pendown()
+                for i in range(4):
+                    forward(40)
+                    right(90)
+                while selecting_y:
+                    for height in counting:
+                        if keyboard.is_pressed(f"{height}"):
+                            turtle.clear()
+                            boardsizey = height
+                            optionscreen(boardsizex,boardsizey,pcolor,ccolor)
+                            selecting_y = False
+
+    turtle.clear()
+    selectscreen = True
 
 def weiqi():
     turtle.hideturtle()
@@ -226,62 +339,68 @@ def weiqi():
     selectscreen = True
     yselector = 2
     turtle.penup()
-    turtle.setpos(-200,yselector*100-180)
+    turtle.setpos(-100,yselector*50-100)
     turtle.setheading(0)
     for k in range(2):
         turtle.pendown()
-        forward(400)
+        forward(200)
         right(90)
-        forward(70)
+        forward(50)
         right(90)
-    while selectscreen == True:
+    while selectscreen:
         start()
         if keyboard.is_pressed("s"):
             yselector = yselector -1
-            if yselector < 0:
+            if yselector < -2:
                 yselector = 2
             turtle.clear()
             turtle.penup()
-            turtle.setpos(-200, yselector * 100 - 180)
+            turtle.setpos(-100, yselector * 50 - 100)
             turtle.setheading(0)
             for k in range(2):
                 turtle.pendown()
-                forward(400)
+                forward(200)
                 right(90)
-                forward(70)
+                forward(50)
                 right(90)
             start()
             time.sleep(0.08)
         if keyboard.is_pressed("w"):
             yselector = yselector +1
             if yselector > 2:
-                yselector = 0
+                yselector = -2
             turtle.clear()
             turtle.penup()
-            turtle.setpos(-200, yselector * 100 - 180)
+            turtle.setpos(-100, yselector * 50 - 100)
             turtle.setheading(0)
             for k in range(2):
                 turtle.pendown()
-                forward(400)
+                forward(200)
                 right(90)
-                forward(70)
+                forward(50)
                 right(90)
             start()
             time.sleep(0.08)
         if keyboard.is_pressed("Enter"):
             turtle.clear()
-            selectscreen = False
-        if yselector == 2:
-            difficulty = "EASY"
-        if yselector == 1:
-            difficulty = "MEDIUM"
-        if yselector == 0:
-            difficulty = "HARD"
+            if yselector == -1:
+                rules(selectscreen)
+            if yselector == -2:
+                options()
+            if yselector == 2:
+                difficulty = "EASY"
+                selectscreen = False
+            if yselector == 1:
+                difficulty = "MEDIUM"
+                selectscreen = False
+            if yselector == 0:
+                difficulty = "HARD"
+                selectscreen = False
         time.sleep(0.08)
     grid()
     x1 = 0
     y1 = 0
-    board = [
+    board = [[0]*boardsizex for k in range(boardsizey)]
         [0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0],
@@ -289,8 +408,8 @@ def weiqi():
         [0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0],
     ]
-    limit1 = 0
-    limit2 = 5
+    limitx = boardsizex-1
+    limity = boardsizey-1
     visited = [[False] * len(board[0]) for k in range(len(board))]
     group = []
     #captured_coords = {"p": [], "c": []}
@@ -314,7 +433,7 @@ def weiqi():
         turtle.penup()
         turtle.goto(0,-375)
         turtle.pendown()
-        turtle.write(f"CURSOR AT ({x1},{y1})",align = "center",font = ("Georgia",40,"normal"))
+        turtle.write(f"CURSOR AT ({x1+1},{y1+1})",align = "center",font = ("Georgia",40,"normal"))
 
         if not 0 in board[0] and not 0 in board[1] and not 0 in board[2] and not 0 in board[3] and not 0 in board[4] and not 0 in board[5]:
             game = False
@@ -323,7 +442,7 @@ def weiqi():
             for j in range(len(board[0])):
                 if board[i][j] == "p":
                     turtle.penup()
-                    turtle.setpos(100 * i - 275, -100 * j + 275)
+                    turtle.setpos(100 * i - (50*boardsizex-25), -100 * j + (50*boardsizey-25))
                     turtle.setheading(0)
                     turtle.begin_fill()
                     for k in range(4):
@@ -338,29 +457,29 @@ def weiqi():
             turtle.clear()
             grid()
             x1 = x1 + 1
-            if x1 > limit2:
-                x1 = limit1
+            if x1 > limitx:
+                x1 = 0
 
         if keyboard.is_pressed("a"):
             turtle.clear()
             grid()
             x1 = x1 - 1
-            if x1 < limit1:
-                x1 = limit2
+            if x1 < 0:
+                x1 = limitx
 
         if keyboard.is_pressed("w"):
             turtle.clear()
             grid()
             y1 = y1 - 1
-            if y1 < limit1:
-                y1 = limit2
+            if y1 < 0:
+                y1 = limity
 
         if keyboard.is_pressed("s"):
             turtle.clear()
             grid()
             y1 = y1 + 1
-            if y1 > limit2:
-                y1 = limit1
+            if y1 > limity:
+                y1 = 0
 
 
         if keyboard.is_pressed("Enter"):
@@ -388,8 +507,8 @@ def weiqi():
                 #EASY CPU
                 if difficulty == "EASY":
                     while board[xcpu][ycpu] != 0:
-                        xcpu = random.randint(0, 5)
-                        ycpu = random.randint(0, 5)
+                        xcpu = random.randint(0, boardsizex)
+                        ycpu = random.randint(0, boardsizey)
 
                     drawpiece(xcpu, ycpu)
                     board[xcpu][ycpu] = "c"
