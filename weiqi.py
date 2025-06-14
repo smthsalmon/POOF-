@@ -2,7 +2,6 @@ from turtle import*
 import turtle
 import random
 import keyboard
-from pynput import mouse
 import time
 import math
 from collections import Counter
@@ -187,7 +186,7 @@ def start():
 
 def check_capture(x, y, board, groups):
     # determine which player's piece X,Y is
-    player = board[x][y]
+    player = board[y][x]
     opponent = "c" if player == "p" else "p"
 
     # look for adjacent enemy clusters (lrud)
@@ -401,13 +400,6 @@ def weiqi():
     x1 = 0
     y1 = 0
     board = [[0]*boardsizex for k in range(boardsizey)]
-        [0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0],
-    ]
     limitx = boardsizex-1
     limity = boardsizey-1
     visited = [[False] * len(board[0]) for k in range(len(board))]
@@ -435,6 +427,7 @@ def weiqi():
         turtle.pendown()
         turtle.write(f"CURSOR AT ({x1+1},{y1+1})",align = "center",font = ("Georgia",40,"normal"))
 
+
         if not 0 in board[0] and not 0 in board[1] and not 0 in board[2] and not 0 in board[3] and not 0 in board[4] and not 0 in board[5]:
             game = False
 
@@ -442,7 +435,7 @@ def weiqi():
             for j in range(len(board[0])):
                 if board[i][j] == "p":
                     turtle.penup()
-                    turtle.setpos(100 * i - (50*boardsizex-25), -100 * j + (50*boardsizey-25))
+                    turtle.setpos(100 * j - (50*boardsizex-25), -100 * i + (50*boardsizey-25))
                     turtle.setheading(0)
                     turtle.begin_fill()
                     for k in range(4):
@@ -451,7 +444,7 @@ def weiqi():
                         right(90)
                     turtle.end_fill()
                 if board[i][j] == "c":
-                    drawpiece(i,j)
+                    drawpiece(j,i)
 
         if keyboard.is_pressed("d"):
             turtle.clear()
@@ -483,7 +476,7 @@ def weiqi():
 
 
         if keyboard.is_pressed("Enter"):
-            if board[x1][y1] != 0:
+            if board[y1][x1] != 0:
                 turtle.penup()
                 turtle.goto(0,325)
                 turtle.pendown()
@@ -491,7 +484,7 @@ def weiqi():
                 invalidmove = True
 
             else:
-                board[x1][y1] = "p"
+                board[y1][x1] = "p"
 
             groups = find_groups(board)
 
@@ -501,17 +494,17 @@ def weiqi():
 
             if not invalidmove:
 
-                xcpu = random.randint(0, 5)
-                ycpu = random.randint(0, 5)
+                xcpu = random.randint(0, limitx)
+                ycpu = random.randint(0, limity)
 
                 #EASY CPU
                 if difficulty == "EASY":
-                    while board[xcpu][ycpu] != 0:
-                        xcpu = random.randint(0, boardsizex)
-                        ycpu = random.randint(0, boardsizey)
+                    while board[ycpu][xcpu] != 0:
+                        xcpu = random.randint(0, limitx)
+                        ycpu = random.randint(0, limity)
 
                     drawpiece(xcpu, ycpu)
-                    board[xcpu][ycpu] = "c"
+                    board[ycpu][xcpu] = "c"
                 #MEDIUM CPU
                 elif difficulty == "MEDIUM":
                     for player in ["p", "c"]:
@@ -523,22 +516,22 @@ def weiqi():
                             lib_rrow = random.randint(0, (len(liberties["p"]) - 1))
                             xcpu = liberties["p"][lib_rrow][0]
                             ycpu = liberties["p"][lib_rrow][1]
-                            while board[xcpu][ycpu] != 0:
+                            while board[ycpu][xcpu] != 0:
                                 lib_rrow = random.randint(0, len(liberties["p"]) - 1)
                             drawpiece(xcpu, ycpu)
-                            board[xcpu][ycpu] = "c"
+                            board[ycpu][xcpu] = "c"
                         else:
-                            while board[xcpu][ycpu] != 0:
-                                xcpu = random.randint(0, 5)
-                                ycpu = random.randint(0, 5)
+                            while board[ycpu][xcpu] != 0:
+                                xcpu = random.randint(0, limitx)
+                                ycpu = random.randint(0, limity)
                             drawpiece(xcpu, ycpu)
-                            board[xcpu][ycpu] = "c"
+                            board[ycpu][xcpu] = "c"
                     else:
-                        while board[xcpu][ycpu] != 0:
-                            xcpu = random.randint(0, 5)
-                            ycpu = random.randint(0, 5)
+                        while board[ycpu][xcpu] != 0:
+                            xcpu = random.randint(0, limitx)
+                            ycpu = random.randint(0, limity)
                         drawpiece(xcpu, ycpu)
-                        board[xcpu][ycpu] = "c"
+                        board[ycpu][xcpu] = "c"
                 #HARD CPU
                 elif difficulty == "HARD":
                     for player in ["p", "c"]:
@@ -548,17 +541,17 @@ def weiqi():
                         lib_rrow = random.randint(0, (len(liberties["p"]) - 1))
                         xcpu = liberties["p"][lib_rrow][0]
                         ycpu = liberties["p"][lib_rrow][1]
-                        while board[xcpu][ycpu] != 0:
+                        while board[ycpu][xcpu] != 0:
                             lib_rrow = random.randint(0, len(liberties["p"]) - 1)
                         drawpiece(xcpu, ycpu)
 
-                        board[xcpu][ycpu] = "c"
+                        board[ycpu][xcpu] = "c"
                     else:
-                        while board[xcpu][ycpu] != 0:
-                            xcpu = random.randint(0, 5)
-                            ycpu = random.randint(0, 5)
+                        while board[ycpu][xcpu] != 0:
+                            xcpu = random.randint(0, limitx)
+                            ycpu = random.randint(0, limity)
                         drawpiece(xcpu, ycpu)
-                        board[xcpu][ycpu] = "c"
+                        board[ycpu][xcpu] = "c"
 
                 groups = find_groups(board)
                 check_capture(xcpu, ycpu, board, groups)
